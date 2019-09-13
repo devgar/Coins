@@ -1,25 +1,122 @@
 <!DOCUMENT HTML>
 <HTML>
-  <BODY style="padding: 32px; margin:0;">
+  <HEAD>
+    <title>Coins checker by devgar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        width: 100vw;
+        box-sizing: border-box;
+        padding: 24px;
+        margin:0;
+      }
+
+      pre {
+        overflow-x: scroll;
+        padding: 8px 0;
+        margin: 0 -4px;
+      }
+      .resultLine {
+        font-size: 24px;
+        padding: 8px;
+        min-height: 54px;
+        opacity: 0;
+      }
+      .resultLine.filled {
+        transition: opacity 0.5s;
+        opacity: 1;
+      }
+      .resultChart {
+        width: 100vw;
+        margin-left: -24px;
+      }
+      .resultChart .chartLine {
+        height:15px;
+        font-family: monospace;
+        background: #eee;
+      }
+      .resultChart .chartLine:nth-child(2n) {
+        background: #ccc;
+      }
+      .resultChart .chartLine span {
+        margin-left: 4px;
+      }
+      .resultChart .chartLine b{
+        float: right;
+        margin-right: 4px;
+      }
+    </style>
+  </HEAD>
+  <BODY>
     <pre>https://api.coinbase.com/v2/prices/BTC-EUR/buy</pre>
-    <div id="i_btc" style="font-size: 32px; padding: 8px; height: 54px;"></div>
+    <div id="i_btc" class="resultLine"></div>
     <pre>https://api.coinbase.com/v2/prices/LTC-EUR/buy</pre>
-    <div id="i_ltc" style="font-size: 32px; padding: 8px; height: 54px;"></div>
+    <div id="i_ltc" class="resultLine"></div>
+    <pre>https://api.coindesk.com/v1/bpi/historical/close.json?currency=EUR</pre>
+    <div id="d_hist" class="resultChart">
+      <div class="chartLine"><span>UNO</span><b>DOS</b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+      <div class="chartLine"><span></span><b></b></div>
+    </div>
     <SCRIPT>
 fetch("https://api.coinbase.com/v2/prices/BTC-EUR/buy")
 .then(r => r.json())
 .then(d => d.data)
-.then(({ base, currency, amount }) => {
-  document.querySelector('#i_btc').innerText =
-    `1(${base}) costs ${amount}(${currency})`
+.then(({ base, amount }) => {
+  document.querySelector('#i_btc').innerText = `1(${base}) costs ${amount}€`
+  document.querySelector('#i_btc').classList.add('filled')
 })
 
 fetch("https://api.coinbase.com/v2/prices/LTC-EUR/buy")
 .then(r => r.json())
 .then(d => d.data)
-.then(({ base, currency, amount }) => {
-  document.querySelector('#i_ltc').innerText =
-    `1(${base}) costs ${amount}(${currency})`
+.then(({ base, amount }) => {
+  document.querySelector('#i_ltc').innerText = `1(${base}) costs ${amount}€`
+  document.querySelector('#i_ltc').classList.add('filled')
+})
+fetch("https://api.coindesk.com/v1/bpi/historical/close.json?currency=EUR")
+.then(r => r.json())
+.then(d => d.bpi)
+.then(d => {
+  const chart = window.CHART = document.querySelector('#d_hist')
+  const array = Object.entries(d)
+  const values = array.map(a => a[1])
+  const bigger = Math.max(...values)
+  const smaller = Math.min(...values)
+  const ratio = bigger / (bigger - smaller)
+  Object.entries(d).forEach(([ date, amount ], i) => {
+    chart.children[i].children[0].innerText = date
+    chart.children[i].children[1].innerText = amount.toFixed(2) + '€'
+    chart.children[i].style.width = (60 + 40 * (amount - smaller) / (bigger - smaller)) + 'vw'
+  }); 
 })
     </SCRIPT>
   </BODY>
