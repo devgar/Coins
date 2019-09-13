@@ -1,0 +1,26 @@
+<!DOCUMENT HTML>
+<HTML>
+  <BODY style="padding: 32px; margin:0;">
+    <pre>https://api.coinbase.com/v2/prices/BTC-EUR/buy</pre>
+    <div id="i_btc" style="font-size: 32px; padding: 8px; height: 54px;"></div>
+    <pre>https://api.coinbase.com/v2/prices/LTC-EUR/buy</pre>
+    <div id="i_ltc" style="font-size: 32px; padding: 8px; height: 54px;"></div>
+    <SCRIPT>
+fetch("https://api.coinbase.com/v2/prices/BTC-EUR/buy")
+.then(r => r.json())
+.then(d => d.data)
+.then(({ base, currency, amount }) => {
+  document.querySelector('#i_btc').innerText =
+    `1(${base}) costs ${amount}(${currency})`
+})
+
+fetch("https://api.coinbase.com/v2/prices/LTC-EUR/buy")
+.then(r => r.json())
+.then(d => d.data)
+.then(({ base, currency, amount }) => {
+  document.querySelector('#i_ltc').innerText =
+    `1(${base}) costs ${amount}(${currency})`
+})
+    </SCRIPT>
+  </BODY>
+</HTML>
