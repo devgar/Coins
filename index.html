@@ -33,9 +33,11 @@
       }
       .resultChart .chartLine {
         height:15px;
+        width: 100vw;
         position: relative;
         font-family: monospace;
         background: #eee;
+        transition: width 0.5s;
       }
       .resultChart .chartLine:nth-child(2n) {
         background: #ccc;
@@ -48,6 +50,7 @@
         right: 4px;
       }
     </style>
+    <link rel="stylesheet" href="chart-animation.css">
   </HEAD>
   <BODY>
     <pre>https://api.coinbase.com/v2/prices/BTC-EUR/buy</pre>
@@ -56,7 +59,7 @@
     <div id="i_ltc" class="resultLine"></div>
     <pre>https://api.coindesk.com/v1/bpi/historical/close.json?currency=EUR</pre>
     <div id="d_hist" class="resultChart">
-      <div class="chartLine"><span>UNO</span><b>DOS</b></div>
+      <div class="chartLine"><span></span><b></b></div>
       <div class="chartLine"><span></span><b></b></div>
       <div class="chartLine"><span></span><b></b></div>
       <div class="chartLine"><span></span><b></b></div>
