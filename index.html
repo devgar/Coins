@@ -2,6 +2,7 @@
 <HTML>
   <HEAD>
     <title>Coins checker by devgar</title>
+    <meta charset="utf-8" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       body {
@@ -32,6 +33,7 @@
       }
       .resultChart .chartLine {
         height:15px;
+        position: relative;
         font-family: monospace;
         background: #eee;
       }
@@ -42,8 +44,8 @@
         margin-left: 4px;
       }
       .resultChart .chartLine b{
-        float: right;
-        margin-right: 4px;
+        position: absolute;
+        right: 4px;
       }
     </style>
   </HEAD>
@@ -107,12 +109,12 @@ fetch("https://api.coindesk.com/v1/bpi/historical/close.json?currency=EUR")
 .then(d => d.bpi)
 .then(d => {
   const chart = window.CHART = document.querySelector('#d_hist')
-  const array = Object.entries(d)
+  const array = Object.entries(d).reverse()
   const values = array.map(a => a[1])
   const bigger = Math.max(...values)
   const smaller = Math.min(...values)
   const ratio = bigger / (bigger - smaller)
-  Object.entries(d).forEach(([ date, amount ], i) => {
+  array.forEach(([ date, amount ], i) => {
     chart.children[i].children[0].innerText = date
     chart.children[i].children[1].innerText = amount.toFixed(2) + '€'
     chart.children[i].style.width = (60 + 40 * (amount - smaller) / (bigger - smaller)) + 'vw'
