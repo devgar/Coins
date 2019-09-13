@@ -20,7 +20,8 @@
       .resultLine {
         font-size: 24px;
         padding: 8px;
-        min-height: 54px;
+        min-height: 32px;
+        overflow: hidden;
         opacity: 0;
       }
       .resultLine.filled {
@@ -30,27 +31,30 @@
       .resultChart {
         width: 100vw;
         margin-left: -24px;
+        user-select: none;
       }
       .resultChart .chartLine {
         height:15px;
         width: 100vw;
-        position: relative;
+        display: flex;
+        justify-content: space-between;
         font-family: monospace;
-        background: #eee;
-        transition: width 0.5s;
+        background: #ccc;
+        transition: width 0.5s, margin 0.2s;
+      }
+      .resultChart .chartLine.big {
+        margin-top: 9px;
       }
       .resultChart .chartLine:nth-child(2n) {
-        background: #ccc;
+        background: #eee;
       }
-      .resultChart .chartLine span {
-        margin-left: 4px;
+      .resultChart .chartLine > * {
+        margin: 0 4px;
       }
-      .resultChart .chartLine b{
-        position: absolute;
-        right: 4px;
+      .resultChart .chartLine > * > span {
+        color: #666;
       }
     </style>
-    <link rel="stylesheet" href="chart-animation.css">
   </HEAD>
   <BODY>
     <pre>https://api.coinbase.com/v2/prices/BTC-EUR/buy</pre>
@@ -92,6 +96,15 @@
       <div class="chartLine"><span></span><b></b></div>
     </div>
     <SCRIPT>
+function fD(date, md, yd) {
+  const [year, month, day] = date.split('-')
+  let rt = ''
+  rt += yd ? `${year}` : `<span>${year}</span>`
+  rt += md ? ` <b>${month}</b>` : ` ${month}`
+  rt += ` <b>${day}</b>`
+  return rt
+}
+
 fetch("https://api.coinbase.com/v2/prices/BTC-EUR/buy")
 .then(r => r.json())
 .then(d => d.data)
@@ -116,11 +129,16 @@ fetch("https://api.coindesk.com/v1/bpi/historical/close.json?currency=EUR")
   const values = array.map(a => a[1])
   const bigger = Math.max(...values)
   const smaller = Math.min(...values)
-  const ratio = bigger / (bigger - smaller)
-  array.forEach(([ date, amount ], i) => {
-    chart.children[i].children[0].innerText = date
+  const ratio = (amount) => (amount - smaller) / (bigger - smaller)
+  array.forEach(([ date, amount ], i, arr) => {
+    i && console.log(arr[i-1][0].split('-')[2])
+    let md = i == 0 || parseInt(arr[i-1][0].split('-')[2]) == 1
+    let yd = i == 0 || md && parseInt(arr[i-1][0].split('/')[1]) == 1
+    chart.children[i].children[0].innerHTML = fD(date, md, yd)
     chart.children[i].children[1].innerText = amount.toFixed(2) + '€'
-    chart.children[i].style.width = (60 + 40 * (amount - smaller) / (bigger - smaller)) + 'vw'
+    chart.children[i].style.width = (60 + 40 * ratio(amount)) + 'vw'
+    if (md) chart.children[i].classList.add('big')
+    else chart.children[i].classList.remove('big')
   }); 
 })
     </SCRIPT>
